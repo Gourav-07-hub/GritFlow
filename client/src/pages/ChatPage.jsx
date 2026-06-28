@@ -5,7 +5,6 @@ import useSocket from '../hooks/useSocket.js';
 import ConversationList from '../components/chat/ConversationList.jsx';
 import ChatWindow from '../components/chat/ChatWindow.jsx';
 import PageLoader from '../components/ui/PageLoader.jsx';
-import { MessageCircle } from 'lucide-react';
 
 /**
  * Main Chat page supporting responsive list/chat views and URL-param direct chatting.
@@ -157,8 +156,8 @@ export default function ChatPage() {
       <div className="chat-main-panel">
         {!activeConversation ? (
           <div className="chat-empty-panel-state">
-            <div className="chat-empty-panel-icon">
-              <MessageCircle size={64} />
+            <div className="chat-empty-panel-icon" style={{ fontSize: '4rem' }}>
+              💬
             </div>
             <h2>Select a conversation</h2>
             <p>Choose from your conversations on the left</p>
