@@ -31,29 +31,6 @@ built with React, Node.js, Express, MongoDB and Socket.io.
 - MongoDB
 - Cloudinary account
 
-### Installation
-
-1. Clone the repository:
-\`\`\`bash
-git clone https://github.com/YOUR_USERNAME/life-dashboard.git
-cd life-dashboard
-\`\`\`
-
-2. Setup server:
-\`\`\`bash
-cd server
-npm install
-cp .env.example .env
-# Fill in your .env values
-npm run dev
-\`\`\`
-
-3. Setup client:
-\`\`\`bash
-cd client
-npm install
-npm run dev
-\`\`\`
 
 ### Environment Variables
 
