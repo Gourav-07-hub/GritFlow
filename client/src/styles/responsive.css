@@ -1,0 +1,288 @@
+/* ─── responsive.css — Breakpoint-based responsive design rules ──────────── */
+/*                                                                              */
+/*  Breakpoints:                                                                */
+/*    Mobile:   max-width 640px                                                 */
+/*    Tablet:   641px – 1024px                                                  */
+/*    Desktop:  min-width 1025px                                                */
+/*                                                                              */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── DESKTOP (≥1025px) — defaults ────────────────────────────────────────── */
+/* Sidebar: fixed left, always visible, 260px wide                             */
+/* Main content: margin-left 260px                                             */
+/* Dashboard grid: two column (60/40 split)                                    */
+/* Quick stats: 5 columns                                                      */
+/* Overview cards: 3 columns                                                   */
+/* Settings: tabs left, content right                                          */
+
+/* ─── TABLET (641px – 1024px) ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  /* Dashboard Grid: 50/50 two column */
+  .dashboard-columns-grid,
+  .focus-dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Quick stats: 3 columns */
+  .quick-stats-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Stats overview: 2 columns */
+  .overview-stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Weekly/Monthly side by side still works at tablet */
+
+  /* Settings: keep layout but smaller */
+  .settings-page-layout {
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+  }
+
+  /* Account stats: 2 columns */
+  .settings-stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ─── MOBILE (≤640px) ─────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* ── Sidebar: hidden, slides in as overlay ── */
+  /* (Already handled by Sidebar.module.css + DashboardLayout.module.css) */
+
+  /* ── Main content: full width ── */
+  /* (Already handled by DashboardLayout.module.css) */
+
+  /* ── Dashboard Grid: single column stacked ── */
+  .dashboard-columns-grid,
+  .focus-dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* ── Quick Stats: 2 columns ── */
+  .quick-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* ── Overview Cards (Stats Page): 1 column ── */
+  .overview-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* ── Settings Page: tabs horizontal scroll, content below ── */
+  .settings-page-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .settings-sidebar {
+    border-radius: var(--radius-md, 12px);
+    padding: 12px;
+  }
+
+  .settings-nav-tabs {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 6px;
+    padding-bottom: 8px;
+    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  /* IE/Edge */
+  }
+
+  .settings-nav-tabs::-webkit-scrollbar {
+    display: none;  /* Chrome/Safari */
+  }
+
+  .settings-nav-btn {
+    white-space: nowrap;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    min-width: max-content;
+  }
+
+  .settings-section-card {
+    padding: 20px 16px;
+  }
+
+  .settings-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .avatar-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .danger-zone-action-box {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  /* ── Activity Heatmap: horizontal scroll ── */
+  .heatmap-scroll-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+  }
+
+  .heatmap-grid {
+    min-width: 700px;
+  }
+
+  /* ── Weekly/Monthly Reports: stacked ── */
+  .reports-side-by-side,
+  .dashboard-section .dashboard-columns-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* ── Forms / Modals: full screen on mobile ── */
+  .modal-overlay {
+    align-items: stretch;
+  }
+
+  .modal-content,
+  .gratitude-form-modal,
+  .settings-modal-content {
+    max-width: 100%;
+    width: 100%;
+    min-height: 100vh;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  /* ── Gratitude page ── */
+  .gratitude-page-container {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .gratitude-dashboard-top {
+    grid-template-columns: 1fr;
+  }
+
+  .gratitude-toolbar-card {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .gratitude-cards-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* ── Focus page ── */
+  .focus-page-container {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .focus-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .timer-display-container {
+    padding: 20px;
+  }
+
+  .focus-controls-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* ── Stats page ── */
+  .stats-page-container {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .stats-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .leaderboard-table {
+    font-size: 0.85rem;
+  }
+
+  /* ── Reflection page ── */
+  .gratitude-page-title,
+  .focus-page-title,
+  .settings-page-title,
+  .stats-page-title {
+    font-size: 1.5rem;
+  }
+
+  /* ── Page body padding tightened ── */
+  .page-header {
+    margin-bottom: 16px;
+  }
+
+  /* ── Toast positioning ── */
+  .settings-global-alert-toast {
+    left: 16px;
+    right: 16px;
+    max-width: none;
+    top: 16px;
+  }
+
+  /* ── Theme toggle group ── */
+  .theme-toggle-group {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .theme-toggle-btn {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  /* ── Preference items: stack when too narrow ── */
+  .preference-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .preference-controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* ─── SMALL MOBILE (≤375px) ───────────────────────────────────────────────── */
+@media (max-width: 375px) {
+  .quick-stats-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .settings-nav-btn {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+
+  .settings-section-card {
+    padding: 16px 12px;
+  }
+
+  .focus-timer-section {
+    padding: 24px 12px;
+  }
+
+  .timer-svg-ring {
+    width: 200px;
+    height: 200px;
+  }
+}

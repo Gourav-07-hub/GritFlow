@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:image/svg+xml,
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
+      <text y='.9em' font-size='90'>⚡</text>
+      </svg>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO -->
+    <title>GritFlow — Level Up Your Life</title>
+    <meta
+      name="description"
+      content="GritFlow — Track habits, crush goals, build streaks and compete with friends"
+    />
+    <meta name="theme-color" content="#0d0d1a" />
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- Inline script to prevent FOUC (Flash of Unstyled Content) -->
+    <script>
+      try {
+        const storedTheme = localStorage.getItem('gritflow-theme') || localStorage.getItem('theme');
+        const theme = storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system' ? storedTheme : 'system';
+        const activeTheme = theme === 'system' 
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') 
+          : theme;
+        document.documentElement.setAttribute('data-theme', activeTheme);
+      } catch (e) {}
+    </script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

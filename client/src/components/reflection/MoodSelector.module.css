@@ -1,0 +1,58 @@
+/* ─── MoodSelector.module.css ────────────────────────────────────────────── */
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 440px;
+  margin: 0.5rem 0;
+}
+
+.moodBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.75rem 0.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.moodBtn:hover {
+  background-color: rgba(167, 139, 250, 0.06);
+  border-color: rgba(167, 139, 250, 0.3);
+  transform: translateY(-1px);
+}
+
+.moodEmoji {
+  font-size: 1.5rem;
+  transition: transform var(--transition-fast);
+}
+
+.moodLabel {
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+/* Selected active mood highlights */
+.moodBtnActive {
+  background-color: rgba(167, 139, 250, 0.12) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 12px rgba(167, 139, 250, 0.25);
+  transform: scale(1.05);
+}
+
+.moodBtnActive .moodEmoji {
+  transform: scale(1.15);
+}
+
+.moodBtnActive .moodLabel {
+  color: var(--color-primary);
+  font-weight: 700;
+}

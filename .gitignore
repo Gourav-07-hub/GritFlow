@@ -1,0 +1,15 @@
+# GritFlow — Project Root .gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Secrets
+server/.env
+client/.env.local
+client/.env.production

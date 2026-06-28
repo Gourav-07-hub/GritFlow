@@ -1,0 +1,239 @@
+/* ─── Navbar.module.css — Cosmic Glassmorphism Redesign ─── */
+
+.navbar {
+  height: 64px !important;
+  background-color: rgba(8, 11, 20, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-glow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px !important;
+  position: sticky;
+  top: 0;
+  z-index: 80;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.menuButton {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-elevated);
+  transition: all var(--transition-fast);
+}
+
+.menuButton:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-glow);
+  box-shadow: var(--glow-purple);
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 8px !important;
+}
+
+/* Custom Uniform styles for Right Side Icon Buttons */
+.right button,
+.right :global(.notification-bell-btn),
+.right :global(.theme-toggle-button),
+.right [class*="chat-btn"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50% !important;
+  border: 1px solid var(--border-color) !important;
+  background-color: var(--bg-elevated) !important;
+  cursor: pointer;
+  transition: all 0.25s ease !important;
+  color: var(--text-primary) !important;
+  position: relative !important;
+  padding: 0 !important;
+}
+
+.right button:hover,
+.right :global(.notification-bell-btn):hover,
+.right :global(.theme-toggle-button):hover,
+.right [class*="chat-btn"]:hover {
+  border-color: rgba(99, 102, 241, 0.6) !important;
+  box-shadow: var(--glow-purple) !important;
+  transform: translateY(-2px) !important;
+  background-color: var(--bg-hover) !important;
+}
+
+/* Glowing red dots for active badges */
+.right :global(.notification-badge),
+.right [class*="badge"] {
+  position: absolute !important;
+  top: -2px !important;
+  right: -2px !important;
+  background: var(--accent-red) !important;
+  color: #ffffff !important;
+  font-size: 0.7rem !important;
+  font-weight: 800 !important;
+  min-width: 16px !important;
+  height: 16px !important;
+  padding: 0 4px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 2px solid var(--bg-primary) !important;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.8) !important;
+}
+
+.profileContainer {
+  position: relative;
+}
+
+.profileSection {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  padding: 0.375rem 0.75rem !important;
+  border-radius: var(--radius-md, 8px) !important;
+  color: var(--text-primary) !important;
+  font-family: inherit !important;
+  transition: all var(--transition-fast) !important;
+  box-shadow: none !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.profileSection:hover {
+  background-color: var(--bg-hover) !important;
+  transform: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.chevron {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  transition: transform var(--transition-fast);
+}
+
+.profileSection[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 180px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color var(--transition-fast);
+}
+
+.dropdownItem:hover {
+  background-color: var(--bg-hover);
+}
+
+.dropdownIcon {
+  font-size: 1rem;
+}
+
+.userName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  padding: 2px;
+  background: var(--gradient-primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+  overflow: hidden;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: var(--bg-card);
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 1rem;
+  }
+  .userName {
+    display: none;
+  }
+}

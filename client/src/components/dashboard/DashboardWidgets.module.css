@@ -1,0 +1,141 @@
+.widget {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.summary {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.empty {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.item.done {
+  opacity: 0.7;
+}
+
+.name {
+  flex: 1;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.status {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.done .status {
+  color: var(--color-success, #4ade80);
+}
+
+.goalItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.goalTitle {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.goalMeta {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  display: flex;
+  gap: 0.75rem;
+}
+
+.progressBar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.25rem;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--color-primary, #a78bfa);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.overdue {
+  color: var(--color-danger, #ef4444);
+}
+
+.reflectionContent {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.reflectionDate {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.focusValue {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-primary, #a78bfa);
+  line-height: 1.2;
+}
+
+.focusLabel {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.noData {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  font-style: italic;
+  padding: 1rem 0;
+}
