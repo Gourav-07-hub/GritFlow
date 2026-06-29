@@ -13,7 +13,11 @@ export const getGoals = async () => {
     const response = await api.get('/goals');
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed to fetch goals';
+    const data = error.response?.data;
+    if (data?.errors && Array.isArray(data.errors)) {
+      throw data.errors.join('; ');
+    }
+    const message = data?.message || error.message || 'Failed to fetch goals';
     throw message;
   }
 };
@@ -67,7 +71,11 @@ export const deleteGoal = async (id) => {
     const response = await api.delete(`/goals/${id}`);
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed to delete goal';
+    const data = error.response?.data;
+    if (data?.errors && Array.isArray(data.errors)) {
+      throw data.errors.join('; ');
+    }
+    const message = data?.message || error.message || 'Failed to delete goal';
     throw message;
   }
 };
@@ -83,7 +91,11 @@ export const updateGoalProgress = async (id, progress) => {
     const response = await api.patch(`/goals/${id}/progress`, { progress });
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed to update progress';
+    const data = error.response?.data;
+    if (data?.errors && Array.isArray(data.errors)) {
+      throw data.errors.join('; ');
+    }
+    const message = data?.message || error.message || 'Failed to update progress';
     throw message;
   }
 };
@@ -99,7 +111,11 @@ export const toggleMilestone = async (id, milestoneId) => {
     const response = await api.patch(`/goals/${id}/milestones/${milestoneId}`);
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed to toggle milestone';
+    const data = error.response?.data;
+    if (data?.errors && Array.isArray(data.errors)) {
+      throw data.errors.join('; ');
+    }
+    const message = data?.message || error.message || 'Failed to toggle milestone';
     throw message;
   }
 };
