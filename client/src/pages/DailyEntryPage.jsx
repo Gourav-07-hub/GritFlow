@@ -135,19 +135,42 @@ export default function DailyEntryPage() {
     const today = new Date().toISOString().split('T')[0];
 
     try {
-      await api.post('/reflections', {
-        date: today,
-        mood,
-        moodLabel: moodLabelMap[mood],
-        learned: reflection.trim(),
-        grateful: '',
-        improvements: '',
-        highlights: '',
-      });
+      let existingReflection = null;
+      try {
+        const existingRes = await api.get(`/reflections/date/${today}`);
+        existingReflection = existingRes.data;
+      } catch (existingErr) {
+        if (existingErr.response?.status !== 404) {
+          console.error('Reflection check error:', existingErr);
+        }
+      }
+
+      if (existingReflection && existingReflection._id) {
+        await api.put(`/reflections/${existingReflection._id}`, {
+          mood,
+          moodLabel: moodLabelMap[mood],
+          learned: reflection.trim(),
+        });
+      } else {
+        await api.post('/reflections', {
+          date: today,
+          mood,
+          moodLabel: moodLabelMap[mood],
+          learned: reflection.trim(),
+          grateful: '',
+          improvements: '',
+          highlights: '',
+        });
+      }
     } catch (err) {
-      const msg = err.response?.data?.message || 'Failed to save reflection';
-      errors.push(msg);
-      console.error('Reflection save error:', err);
+      const status = err.response?.status;
+      if (status === 400 && err.response?.data?.message?.includes('already exists')) {
+        console.warn('Reflection already exists for today — skipping');
+      } else {
+        const msg = err.response?.data?.message || 'Failed to save reflection';
+        errors.push(msg);
+        console.error('Reflection save error:', err);
+      }
     }
 
     for (const habit of habits) {
@@ -200,15 +223,6 @@ export default function DailyEntryPage() {
         <p style={{ color: '#8892a4', margin: 0 }}>
           You&apos;re on a streak! Keep it going! 🔥
         </p>
-        {savingError && (
-          <div style={{
-            padding: '12px 16px', borderRadius: '10px', background: 'rgba(239,68,68,0.1)',
-            border: '1px solid rgba(239,68,68,0.25)', color: '#f87171', fontSize: '0.875rem',
-            maxWidth: '400px',
-          }}>
-            Some items failed: {savingError}
-          </div>
-        )}
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
           <button
             onClick={() => navigate('/dashboard')}
