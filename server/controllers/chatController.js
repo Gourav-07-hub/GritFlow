@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
 import User from '../models/User.js';
 import Conversation from '../models/Conversation.js';
 import Message from '../models/Message.js';
 import Friendship from '../models/Friendship.js';
+import { io } from '../socket/socketInstance.js';
 
 /**
  * POST /api/chat/conversations
@@ -10,71 +10,77 @@ import Friendship from '../models/Friendship.js';
  */
 export const getOrCreateConversation = async (req, res) => {
   try {
-    console.log('getOrCreateConversation called');
-    console.log('recipientId:', req.body.recipientId);
-    console.log('logged in user:', req.user?._id);
+    console.log('=== getOrCreateConversation START ===');
+    console.log('Body:', req.body);
+    console.log('User:', req.user?._id);
 
     const { recipientId } = req.body;
 
+    // Guard 1 — check recipientId exists
     if (!recipientId) {
+      console.log('ERROR: recipientId missing');
       return res.status(400).json({ message: 'recipientId is required' });
     }
 
-    // 1. Verify recipient exists
+    // Guard 2 — check recipient user exists
+    console.log('Finding recipient user...');
     const recipient = await User.findById(recipientId);
     if (!recipient) {
-      return res.status(404).json({ message: 'Recipient not found' });
+      console.log('ERROR: recipient not found');
+      return res.status(404).json({ message: 'User not found' });
     }
+    console.log('Recipient found:', recipient.name);
 
-    const requesterId = new mongoose.Types.ObjectId(req.user._id);
-    const recipientObjectId = new mongoose.Types.ObjectId(recipientId);
-
-    // 2. Verify logged in user and recipient are friends
+    // Guard 3 — check friendship exists
+    console.log('Checking friendship...');
     const friendship = await Friendship.findOne({
       $or: [
-        { requester: requesterId, recipient: recipientObjectId },
-        { requester: recipientObjectId, recipient: requesterId }
-      ],
-      status: 'accepted'
+        { requester: req.user._id, recipient: recipientId, status: 'accepted' },
+        { requester: recipientId, recipient: req.user._id, status: 'accepted' }
+      ]
     });
+    console.log('Friendship found:', friendship ? 'yes' : 'no');
 
     if (!friendship) {
-      return res.status(403).json({ message: 'You can only chat with friends' });
+      return res.status(403).json({
+        message: 'You can only chat with friends'
+      });
     }
 
-    // 3. Check if conversation already exists between both users
-    // Schema validates exactly 2 participants, so $size is redundant with $all
+    // Guard 4 — find existing conversation
+    console.log('Finding existing conversation...');
     let conversation = await Conversation.findOne({
-      participants: { $all: [requesterId, recipientObjectId] }
-    });
+      participants: { $all: [req.user._id, recipientId] }
+    }).populate('participants', '_id name username avatar')
+      .populate('lastMessage');
 
     if (conversation) {
-      // If inactive, mark it as active
-      if (!conversation.isActive) {
-        conversation.isActive = true;
-        await conversation.save();
-      }
-      conversation = await Conversation.findById(conversation._id)
-        .populate('participants', '_id name username avatar');
+      console.log('Existing conversation found:', conversation._id);
       return res.status(200).json(conversation);
     }
 
-    // 4. Create new conversation
+    // Guard 5 — create new conversation
+    console.log('Creating new conversation...');
     conversation = await Conversation.create({
-      participants: [requesterId, recipientObjectId]
+      participants: [req.user._id, recipientId],
+      lastActivity: new Date()
     });
+    console.log('New conversation created:', conversation._id);
 
+    // Populate after creation
     conversation = await Conversation.findById(conversation._id)
       .populate('participants', '_id name username avatar');
 
+    console.log('=== getOrCreateConversation SUCCESS ===');
     return res.status(200).json(conversation);
+
   } catch (error) {
-    console.error('getOrCreateConversation ERROR:', error.message);
+    console.error('=== getOrCreateConversation ERROR ===');
+    console.error('Message:', error.message);
     console.error('Stack:', error.stack);
     return res.status(500).json({
       message: 'Failed to create conversation',
-      error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      error: error.message
     });
   }
 };

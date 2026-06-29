@@ -35,6 +35,7 @@ import helmet from 'helmet';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { socketHandler } from './socket/socketHandler.js';
+import { setIO } from './socket/socketInstance.js';
 import compression from 'compression';
 import { generalLimiter, authLimiter, focusLimiter } from './middleware/rateLimitMiddleware.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -183,6 +184,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
     }
   });
 
+  setIO(io);
   socketHandler(io);
 
   // ─── Start Listening ─────────────────────────────────────────────────────────
