@@ -72,9 +72,6 @@ export const validateHabit = (req, res, next) => {
 };
 
 /**
- * Goal validation middleware
- */
-/**
  * Habit update validation (optional fields — only validates if present)
  */
 export const validateHabitUpdate = (req, res, next) => {
@@ -95,6 +92,9 @@ export const validateHabitUpdate = (req, res, next) => {
   return next();
 };
 
+/**
+ * Goal validation middleware (required fields)
+ */
 export const validateGoal = (req, res, next) => {
   const { title, deadline } = req.body;
   const errors = [];
@@ -112,9 +112,9 @@ export const validateGoal = (req, res, next) => {
     } else {
       const dead = new Date(parsedDate);
       const now = new Date();
-      // Reset clock to 23:59:59 of deadline day to allow same-day goals
-      dead.setHours(23, 59, 59, 999);
-      if (dead < now) {
+      // Add a full day and subtract a millisecond for end-of-day tolerance
+      const endOfDay = new Date(dead.getTime() + 86400000 - 1);
+      if (endOfDay.getTime() < now.getTime()) {
         errors.push('deadline: Deadline must be a valid future date');
       }
     }
@@ -144,8 +144,8 @@ export const validateGoalUpdate = (req, res, next) => {
     } else {
       const dead = new Date(parsedDate);
       const now = new Date();
-      dead.setHours(23, 59, 59, 999);
-      if (dead < now) {
+      const endOfDay = new Date(dead.getTime() + 86400000 - 1);
+      if (endOfDay.getTime() < now.getTime()) {
         errors.push('deadline: Deadline must be a valid future date');
       }
     }

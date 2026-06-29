@@ -28,7 +28,11 @@ export const createGoal = async (goalData) => {
     const response = await api.post('/goals', goalData);
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed to create goal';
+    const data = error.response?.data;
+    if (data?.errors && Array.isArray(data.errors)) {
+      throw data.errors.join('; ');
+    }
+    const message = data?.message || error.message || 'Failed to create goal';
     throw message;
   }
 };
@@ -44,7 +48,11 @@ export const updateGoal = async (id, goalData) => {
     const response = await api.put(`/goals/${id}`, goalData);
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || error.message || 'Failed to update goal';
+    const data = error.response?.data;
+    if (data?.errors && Array.isArray(data.errors)) {
+      throw data.errors.join('; ');
+    }
+    const message = data?.message || error.message || 'Failed to update goal';
     throw message;
   }
 };
