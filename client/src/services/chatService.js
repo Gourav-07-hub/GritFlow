@@ -1,4 +1,4 @@
-import api from './api.js';
+import api from './axiosConfig';
 
 /**
  * Get or create a private conversation with a recipient
