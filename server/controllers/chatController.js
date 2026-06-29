@@ -10,10 +10,14 @@ import Friendship from '../models/Friendship.js';
  */
 export const getOrCreateConversation = async (req, res) => {
   try {
+    console.log('getOrCreateConversation called');
+    console.log('recipientId:', req.body.recipientId);
+    console.log('logged in user:', req.user?._id);
+
     const { recipientId } = req.body;
 
     if (!recipientId) {
-      return res.status(400).json({ message: 'Recipient ID is required' });
+      return res.status(400).json({ message: 'recipientId is required' });
     }
 
     // 1. Verify recipient exists
@@ -34,17 +38,14 @@ export const getOrCreateConversation = async (req, res) => {
       status: 'accepted'
     });
 
-    console.log('recipientId received:', req.body.recipientId);
-    console.log('logged in user:', req.user._id);
-    console.log('friendship found:', friendship);
-
     if (!friendship) {
       return res.status(403).json({ message: 'You can only chat with friends' });
     }
 
     // 3. Check if conversation already exists between both users
+    // Schema validates exactly 2 participants, so $size is redundant with $all
     let conversation = await Conversation.findOne({
-      participants: { $all: [requesterId, recipientObjectId], $size: 2 }
+      participants: { $all: [requesterId, recipientObjectId] }
     });
 
     if (conversation) {
@@ -68,8 +69,13 @@ export const getOrCreateConversation = async (req, res) => {
 
     return res.status(200).json(conversation);
   } catch (error) {
-    console.error('getOrCreateConversation ERROR:', error);
-    return res.status(500).json({ message: error.message });
+    console.error('getOrCreateConversation ERROR:', error.message);
+    console.error('Stack:', error.stack);
+    return res.status(500).json({
+      message: 'Failed to create conversation',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
 

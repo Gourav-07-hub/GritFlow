@@ -42,8 +42,9 @@ const conversationSchema = new mongoose.Schema(
   }
 );
 
-// Compound unique index on participants array to prevent duplicate conversations between same two users
-conversationSchema.index({ participants: 1 }, { unique: true });
+// Compound index on participants array for query performance
+// NOT unique — multikey unique index prevents users from being in more than one conversation
+conversationSchema.index({ participants: 1 });
 
 // Pre-save hook to sort participants to guarantee uniqueness regardless of query order
 conversationSchema.pre('save', function () {
