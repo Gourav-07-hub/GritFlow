@@ -17,6 +17,7 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
+import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import healthRoutes from './routes/healthRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -88,6 +89,28 @@ const initServer = async () => {
 
   // 1. Connect to MongoDB first — exit on failure
   await connectDB();
+
+  // 1b. Drop old unique index on conversations collection if it still exists
+  //     (the schema now uses a non-unique index, but existing unique index in Atlas
+  //      causes E11000 duplicate key errors when users try to create conversations)
+  try {
+    const db = mongoose.connection.db;
+    const collections = await db.listCollections({ name: 'conversations' }).toArray();
+    if (collections.length > 0) {
+      const indexes = await db.collection('conversations').indexes();
+      const oldUnique = indexes.find(
+        (idx) => idx.name === 'participants_1' && idx.unique === true
+      );
+      if (oldUnique) {
+        console.log('Dropping old unique index on conversations.participants...');
+        await db.collection('conversations').dropIndex('participants_1');
+        console.log('   Done. Replaced with non-unique index (auto-created by Mongoose).');
+      }
+    }
+  } catch (indexErr) {
+    // Non-fatal — the E11000 fallback in the controller will handle it
+    console.warn('   Note: could not check/drop old unique index:', indexErr.message);
+  }
 
   // 2. Create Express app
   const app = express();

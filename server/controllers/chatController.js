@@ -78,6 +78,23 @@ export const getOrCreateConversation = async (req, res) => {
     console.error('=== getOrCreateConversation ERROR ===');
     console.error('Message:', error.message);
     console.error('Stack:', error.stack);
+
+    // Handle E11000 duplicate key — old unique index still exists in Atlas
+    if (error.code === 11000) {
+      console.log('E11000 — duplicate key, trying to find existing conversation...');
+      try {
+        const existing = await Conversation.findOne({
+          participants: { $all: [req.user._id, recipientId] }
+        }).populate('participants', '_id name username avatar');
+        if (existing) {
+          console.log('Found existing conversation via E11000 fallback:', existing._id);
+          return res.status(200).json(existing);
+        }
+      } catch (fallbackErr) {
+        console.error('E11000 fallback also failed:', fallbackErr.message);
+      }
+    }
+
     return res.status(500).json({
       message: 'Failed to create conversation',
       error: error.message
