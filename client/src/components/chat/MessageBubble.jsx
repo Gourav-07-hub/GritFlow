@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import EmojiReactionPicker from './EmojiReactionPicker.jsx';
-import { Trash2 } from 'lucide-react';
+
 
 /**
  * Single Message Bubble component displaying text, times, read receipts, reactions, and context options.
@@ -60,7 +60,7 @@ export default function MessageBubble({ message, isOwn, onReact, onDelete, isCon
                 type="button"
                 title="Delete message"
               >
-                <Trash2 size={14} />
+                <span className="material-symbols-outlined" style={{fontSize: '14px'}}>Delete</span>
               </button>
             )}
           </div>

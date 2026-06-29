@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+
 
 /**
  * Header component for the active Chat window.
@@ -31,7 +31,7 @@ export default function ChatHeader({ friend, isOnline, onBack, onViewProfile }) 
     <div className="chat-header-container">
       <div className="chat-header-left">
         <button className="chat-back-btn" onClick={onBack} aria-label="Back">
-          <ArrowLeft size={20} />
+          <span style={{fontSize: '20px'}}>←</span>
         </button>
 
         <div className="chat-header-avatar-wrapper">

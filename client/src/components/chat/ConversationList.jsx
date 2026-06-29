@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConversationItem from './ConversationItem.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { Search, Users } from 'lucide-react';
+
 
 /**
  * Left panel component showing a search bar and the list of user conversations.
@@ -28,7 +28,7 @@ export default function ConversationList({ conversations, activeId, onlineUsers,
   return (
     <div className="conversation-list-container">
       <div className="conversation-search-wrapper">
-        <Search size={16} className="search-input-icon" />
+        <span className="search-input-icon">Search</span>
         <input
           type="text"
           className="conversation-search-input"
@@ -52,7 +52,7 @@ export default function ConversationList({ conversations, activeId, onlineUsers,
           ))
         ) : filteredConversations.length === 0 ? (
           <div className="conversation-list-empty-state">
-            <Users size={40} className="empty-state-icon" />
+            <span className="empty-state-icon" style={{fontSize: '40px'}}>💬</span>
             <div className="empty-title">No conversations yet</div>
             <div className="empty-subtitle">Go to Friends to start chatting!</div>
             <button

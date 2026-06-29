@@ -6,7 +6,6 @@
  */
 
 import { useTheme } from '../../context/ThemeContext';
-import { Sun, Moon } from 'lucide-react';
 
 function ThemeToggle() {
   const { activeTheme, toggleTheme } = useTheme();
@@ -23,7 +22,7 @@ function ThemeToggle() {
       type="button"
     >
       <span className={`theme-icon ${isDark ? 'icon-sun' : 'icon-moon'}`}>
-        {isDark ? <Sun size={18} /> : <Moon size={18} />}
+        {isDark ? 'Sun' : 'Moon'}
       </span>
     </button>
   );

@@ -5,7 +5,7 @@ import ThemeToggle from '../ui/ThemeToggle';
 import NotificationBell from '../ui/NotificationBell';
 import styles from './Navbar.module.css';
 import { getUnreadMessageCount } from '../../services/chatService.js';
-import { User, LogOut, ChevronDown } from 'lucide-react';
+
 
 /**
  * Navbar component

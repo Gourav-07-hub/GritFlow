@@ -80,10 +80,17 @@ const initServer = async () => {
   const NODE_ENV = process.env.NODE_ENV || 'development';
 
   // ─── CORS — must come before everything ──────────────────────────────────────
-  const clientOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',');
+  const clientOrigins = (process.env.CLIENT_ORIGIN || '').split(',').filter(Boolean);
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://gritflow-eight.vercel.app',
+    'https://gritflow-bebkkui2o-gorsh-07.vercel.app',
+    ...clientOrigins
+  ];
   app.use(
     cors({
-      origin: ['http://localhost:5173', 'http://localhost:5174', ...clientOrigins],
+      origin: allowedOrigins,
       credentials: true,
     })
   );
@@ -155,7 +162,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
   const io = new Server(httpServer, {
     cors: {
-      origin: ['http://localhost:5173', 'http://localhost:5174', ...clientOrigins],
+      origin: allowedOrigins,
       methods: ['GET', 'POST'],
       credentials: true
     }

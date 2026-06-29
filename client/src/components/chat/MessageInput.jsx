@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send } from 'lucide-react';
+
 
 /**
  * Message Input area for typing and sending messages, with typing indicator triggers and auto-resizing.
@@ -81,7 +81,7 @@ export default function MessageInput({ onSend, onTyping, onStopTyping, loading }
           {loading ? (
             <div className="spinner" style={{ width: '16px', height: '16px', borderWidth: '2px' }} />
           ) : (
-            <Send size={16} />
+            <span>Send</span>
           )}
         </button>
       </div>
