@@ -41,15 +41,20 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// ─── Bootstrap logging — printed before everything else ─────────────────────
+console.log('Starting GritFlow server...');
+console.log('Node version:', process.version);
+console.log('Environment:', process.env.NODE_ENV || 'development');
+
 // ─── Process-level Error Handlers ─────────────────────────────────────────────
 
 /**
  * Catch synchronous exceptions that escape all try/catch blocks.
- * Log the error and exit so the process supervisor can restart cleanly.
+ * Log the full error and exit so the process supervisor can restart cleanly.
  */
 process.on('uncaughtException', (err) => {
-  console.error('💥 Uncaught Exception:', err.message);
-  console.error(err.stack);
+  console.error('UNCAUGHT EXCEPTION:', err.message);
+  console.error('Stack:', err.stack);
   process.exit(1);
 });
 
@@ -58,8 +63,9 @@ process.on('uncaughtException', (err) => {
  * In Node 15+ these crash the process by default; we handle them explicitly.
  */
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('💥 Unhandled Rejection at:', promise);
-  console.error('   Reason:', reason);
+  console.error('UNHANDLED REJECTION at:', promise);
+  console.error('Reason:', reason?.message || reason);
+  console.error('Reason stack:', reason?.stack || '(no stack)');
   process.exit(1);
 });
 
@@ -71,6 +77,14 @@ process.on('unhandledRejection', (reason, promise) => {
  * error handler and the app.listen() call is never reached.
  */
 const initServer = async () => {
+  // Validate required environment variables at startup
+  const requiredEnvVars = ['MONGO_URI', 'JWT_SECRET'];
+  const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+  if (missingEnvVars.length > 0) {
+    console.error(`❌ Startup Error: Missing required environment variables: ${missingEnvVars.join(', ')}`);
+    process.exit(1);
+  }
+
   // 1. Connect to MongoDB first — exit on failure
   await connectDB();
 
@@ -171,7 +185,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
   socketHandler(io);
 
   // ─── Start Listening ─────────────────────────────────────────────────────────
-  const server = httpServer.listen(PORT, () => {
+  console.log('Starting server...');
+  const server = httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
   });
 
