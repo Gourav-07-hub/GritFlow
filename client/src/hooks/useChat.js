@@ -39,10 +39,17 @@ export default function useChat() {
     setError(null);
     try {
       const data = await getConversationsApi();
-      setConversations(data);
+      setConversations(data || []);
     } catch (err) {
+      const status = err.response?.status;
       console.error('Error fetching conversations:', err);
-      setError(err.message || 'Failed to fetch conversations');
+      if (status === 404) {
+        setError('Chat service unavailable. Please try again later.');
+      } else if (status === 401) {
+        setError('Please login again.');
+      } else {
+        setError(err.message || 'Failed to fetch conversations');
+      }
     } finally {
       setLoading((prev) => ({ ...prev, conversations: false }));
     }
@@ -54,7 +61,6 @@ export default function useChat() {
       setUnreadCount(data.count);
     } catch (err) {
       console.error('Error fetching unread count:', err);
-      setError(err.message || 'Failed to fetch unread count');
     }
   }, []);
 
@@ -277,8 +283,13 @@ export default function useChat() {
 
       fetchUnreadCount();
     } catch (err) {
+      const status = err.response?.status;
       console.error('Error opening conversation:', err);
-      setError(err.message || 'Failed to open conversation');
+      if (status === 404) {
+        setError('Chat service unavailable. Please try again later.');
+      } else {
+        setError(err.message || 'Failed to open conversation');
+      }
     } finally {
       setLoading((prev) => ({ ...prev, messages: false }));
     }
@@ -341,8 +352,13 @@ export default function useChat() {
         setHasMore(data.hasMore);
         setCurrentPage(nextPage);
       } catch (err) {
+        const status = err.response?.status;
         console.error('Error loading more messages:', err);
-        setError(err.message || 'Failed to load more messages');
+        if (status === 404) {
+          setError('Chat service unavailable. Please try again later.');
+        } else {
+          setError(err.message || 'Failed to load more messages');
+        }
       }
     }
   }, [currentPage, hasMore, loading.messages]);

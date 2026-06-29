@@ -98,6 +98,7 @@ const initServer = async () => {
   const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
+    'https://gritflow.vercel.app',
     'https://gritflow-eight.vercel.app',
     'https://gritflow-bebkkui2o-gorsh-07.vercel.app',
     ...clientOrigins

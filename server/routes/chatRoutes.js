@@ -12,6 +12,11 @@ import {
 
 const router = express.Router();
 
+// Test route — verify chat routes are mounted (no auth required)
+router.get('/test', (req, res) => {
+  res.json({ message: 'Chat routes working!' });
+});
+
 // Apply protect middleware to all routes in this router
 router.use(protect);
 
