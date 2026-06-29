@@ -6,12 +6,9 @@ import ErrorBoundary from './components/ui/ErrorBoundary.jsx';
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
-const HabitsPage = lazy(() => import('./pages/HabitsPage'));
-const GoalsPage = lazy(() => import('./pages/GoalsPage'));
-const ReflectionPage = lazy(() => import('./pages/ReflectionPage'));
+const DailyEntryPage = lazy(() => import('./pages/DailyEntryPage'));
 const FocusPage = lazy(() => import('./pages/FocusPage'));
 const GratitudePage = lazy(() => import('./pages/GratitudePage'));
-const StatsPage = lazy(() => import('./pages/StatsPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const AchievementsPage = lazy(() => import('./components/achievements/AchievementsPage'));
 const FriendsPage = lazy(() => import('./pages/FriendsPage'));
@@ -60,12 +57,9 @@ function AppContent() {
             <Route element={<PrivateRoute />}>
               <Route element={<DashboardLayout />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/dashboard/habits" element={<HabitsPage />} />
-                <Route path="/dashboard/goals" element={<GoalsPage />} />
-                <Route path="/dashboard/reflection" element={<ReflectionPage />} />
+                <Route path="/dashboard/daily" element={<DailyEntryPage />} />
                 <Route path="/dashboard/focus" element={<FocusPage />} />
                 <Route path="/dashboard/gratitude" element={<GratitudePage />} />
-                <Route path="/dashboard/stats" element={<StatsPage />} />
                 <Route path="/dashboard/achievements" element={<AchievementsPage />} />
                 <Route path="/dashboard/settings" element={<SettingsPage />} />
                 <Route path="/dashboard/friends" element={<FriendsPage />} />

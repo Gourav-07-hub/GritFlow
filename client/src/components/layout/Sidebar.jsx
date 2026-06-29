@@ -48,15 +48,12 @@ function Sidebar({ isOpen, toggleSidebar, isMobile }) {
   }, [fetchPendingRequests]);
 
   const navItems = [
-    { name: 'Overview', path: '/dashboard', icon: '📊' },
-    { name: 'Habit Tracker', path: '/dashboard/habits', icon: '✅' },
-    { name: 'Goals', path: '/dashboard/goals', icon: '🎯' },
-    { name: 'Reflection', path: '/dashboard/reflection', icon: '📓' },
+    { name: 'Dashboard', path: '/dashboard', icon: '📊' },
+    { name: 'Daily Log', path: '/dashboard/daily', icon: '📝' },
     { name: 'Focus Timer', path: '/dashboard/focus', icon: '⏱️' },
     { name: 'Gratitude', path: '/dashboard/gratitude', icon: '🙏' },
     { name: 'Friends', path: '/dashboard/friends', icon: '👥' },
     { name: 'Messages', path: '/dashboard/chat', icon: '💬' },
-    { name: 'Statistics', path: '/dashboard/stats', icon: '📈' },
     { name: 'Achievements', path: '/dashboard/achievements', icon: '🏆' },
     { name: 'Settings', path: '/dashboard/settings', icon: '⚙️' },
   ];

@@ -55,37 +55,33 @@
 .right {
   display: flex;
   align-items: center;
-  gap: 8px !important;
+  gap: 10px;
 }
 
-/* Custom Uniform styles for Right Side Icon Buttons */
-.right button,
-.right :global(.notification-bell-btn),
-.right :global(.theme-toggle-button),
-.right [class*="chat-btn"] {
+.iconBtn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: 50% !important;
-  border: 1px solid var(--border-color) !important;
-  background-color: var(--bg-elevated) !important;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-elevated);
   cursor: pointer;
-  transition: all 0.25s ease !important;
-  color: var(--text-primary) !important;
-  position: relative !important;
-  padding: 0 !important;
+  transition: all 0.25s ease;
+  color: var(--text-primary);
+  position: relative;
+  padding: 0;
+  outline: none;
+  flex-shrink: 0;
+  font-size: 1.1rem;
 }
 
-.right button:hover,
-.right :global(.notification-bell-btn):hover,
-.right :global(.theme-toggle-button):hover,
-.right [class*="chat-btn"]:hover {
-  border-color: rgba(99, 102, 241, 0.6) !important;
-  box-shadow: var(--glow-purple) !important;
-  transform: translateY(-2px) !important;
-  background-color: var(--bg-hover) !important;
+.iconBtn:hover {
+  border-color: rgba(99, 102, 241, 0.6);
+  box-shadow: var(--glow-purple);
+  transform: translateY(-2px);
+  background-color: var(--bg-hover);
 }
 
 /* Glowing red dots for active badges */

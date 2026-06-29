@@ -6,11 +6,6 @@ import NotificationBell from '../ui/NotificationBell';
 import styles from './Navbar.module.css';
 import { getUnreadMessageCount } from '../../services/chatService.js';
 
-
-/**
- * Navbar component
- * @param {{ toggleSidebar: () => void, sidebarOpen: boolean }} props
- */
 function Navbar({ toggleSidebar, sidebarOpen }) {
   const { user, logout } = useAuth();
   const location = useLocation();
@@ -34,26 +29,20 @@ function Navbar({ toggleSidebar, sidebarOpen }) {
     return () => clearInterval(interval);
   }, []);
 
-  // Helper to map pathname to current page title
   const getPageTitle = (pathname) => {
     if (pathname.startsWith('/dashboard/chat')) {
       return 'Messages';
     }
+    if (pathname.startsWith('/dashboard/daily')) {
+      return 'Daily Entry';
+    }
     switch (pathname) {
       case '/dashboard':
-        return 'Overview';
-      case '/dashboard/habits':
-        return 'Habit Tracker';
-      case '/dashboard/goals':
-        return 'Goals';
-      case '/dashboard/reflection':
-        return 'Reflection';
+        return 'Dashboard';
       case '/dashboard/focus':
         return 'Focus Timer';
       case '/dashboard/gratitude':
         return 'Gratitude';
-      case '/dashboard/stats':
-        return 'Statistics';
       case '/dashboard/achievements':
         return 'Achievements';
       case '/dashboard/settings':
@@ -63,7 +52,6 @@ function Navbar({ toggleSidebar, sidebarOpen }) {
     }
   };
 
-  // Helper to get initials if avatar is not set
   const getInitials = (name) => {
     if (!name) return 'U'
     const parts = name.trim().split(' ')
@@ -96,37 +84,11 @@ function Navbar({ toggleSidebar, sidebarOpen }) {
 
       <div className={styles.right}>
         <button
-          className="icon-btn"
+          className={styles.iconBtn}
           onClick={() => navigate('/dashboard/chat')}
           title="Messages"
           aria-label="Messages"
           type="button"
-          style={{
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
-            border: '1px solid var(--border-color)',
-            background: 'var(--bg-elevated)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: 'var(--text-secondary)',
-            transition: 'all 0.2s ease',
-            flexShrink: 0,
-            outline: 'none',
-            position: 'relative'
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.borderColor = '#6366f1'
-            e.currentTarget.style.color = 'var(--text-primary)'
-            e.currentTarget.style.boxShadow = '0 0 0 2px rgba(99,102,241,0.15)'
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.borderColor = 'var(--border-color)'
-            e.currentTarget.style.color = 'var(--text-secondary)'
-            e.currentTarget.style.boxShadow = 'none'
-          }}
         >
           💬
           {unreadCount > 0 && (
@@ -366,57 +328,6 @@ function Navbar({ toggleSidebar, sidebarOpen }) {
                   </svg>
                 </div>
                 <span>My Profile</span>
-              </button>
-
-              {/* Logout */}
-              <button
-                onClick={() => {
-                  logout()
-                  setProfileOpen(false)
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  width: '100%',
-                  padding: '10px 12px',
-                  borderRadius: '10px',
-                  border: 'none',
-                  background: 'transparent',
-                  color: '#ef4444',
-                  fontSize: '0.875rem',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.15s ease',
-                  marginTop: '2px'
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'rgba(239,68,68,0.1)'
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'transparent'
-                }}
-              >
-                <div style={{
-                  width: '28px',
-                  height: '28px',
-                  borderRadius: '8px',
-                  background: 'rgba(239,68,68,0.12)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0
-                }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
-                  </svg>
-                </div>
-                <span>Logout</span>
               </button>
 
             </div>
