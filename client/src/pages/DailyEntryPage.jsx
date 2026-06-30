@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../services/axiosConfig';
 
@@ -42,23 +42,33 @@ export default function DailyEntryPage() {
   const [originalGoalProgress, setOriginalGoalProgress] = useState({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [savingError, setSavingError] = useState(null);
   const [habitLoading, setHabitLoading] = useState(false);
   const [goalLoading, setGoalLoading] = useState(false);
   const [habitError, setHabitError] = useState(null);
   const [goalError, setGoalError] = useState(null);
   const [slideDir, setSlideDir] = useState('right');
+  const habitsFetched = useRef(false);
+  const goalsFetched = useRef(false);
 
   useEffect(() => {
     document.title = 'Daily Entry | GritFlow';
   }, []);
 
   const fetchHabits = useCallback(async () => {
+    if (habitLoading) return;
     setHabitLoading(true);
     setHabitError(null);
     try {
-      const res = await api.get('/habits');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setHabitError('Not authenticated. Please login again.');
+        console.error('No auth token found');
+        return;
+      }
+      const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await api.get(`${baseURL}/api/habits`);
       const data = res.data || [];
+      console.log('Habits fetched:', data.length);
       setHabits(data);
       const initialChecked = {};
       data.forEach((h) => {
@@ -66,19 +76,34 @@ export default function DailyEntryPage() {
       });
       setCheckedHabits(initialChecked);
     } catch (err) {
-      setHabitError('Failed to load habits');
-      console.error(err);
+      console.error('Fetch habits error:', err);
+      console.error('Status:', err.response?.status);
+      console.error('Message:', err.response?.data);
+      if (err.response?.status === 401) {
+        setHabitError('Session expired. Please login again.');
+      } else {
+        setHabitError('Failed to load habits. Please try again.');
+      }
     } finally {
       setHabitLoading(false);
     }
-  }, []);
+  }, [habitLoading]);
 
   const fetchGoals = useCallback(async () => {
+    if (goalLoading) return;
     setGoalLoading(true);
     setGoalError(null);
     try {
-      const res = await api.get('/goals');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setGoalError('Not authenticated. Please login again.');
+        console.error('No auth token found');
+        return;
+      }
+      const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await api.get(`${baseURL}/api/goals`);
       const data = res.data || [];
+      console.log('Goals fetched:', data.length);
       const active = data.filter((g) => g.status === 'active' || !g.status);
       setGoals(active);
       const original = {};
@@ -87,24 +112,32 @@ export default function DailyEntryPage() {
       });
       setOriginalGoalProgress(original);
     } catch (err) {
-      setGoalError('Failed to load goals');
-      console.error(err);
+      console.error('Fetch goals error:', err);
+      console.error('Status:', err.response?.status);
+      console.error('Message:', err.response?.data);
+      if (err.response?.status === 401) {
+        setGoalError('Session expired. Please login again.');
+      } else {
+        setGoalError('Failed to load goals. Please try again.');
+      }
     } finally {
       setGoalLoading(false);
     }
-  }, []);
+  }, [goalLoading]);
 
   useEffect(() => {
-    if (step === 1 && habits.length === 0 && !habitLoading) {
+    if (step === 1 && !habitsFetched.current) {
+      habitsFetched.current = true;
       fetchHabits();
     }
-  }, [step, habits.length, habitLoading, fetchHabits]);
+  }, [step, fetchHabits]);
 
   useEffect(() => {
-    if (step === 2 && goals.length === 0 && !goalLoading) {
+    if (step === 2 && !goalsFetched.current) {
+      goalsFetched.current = true;
       fetchGoals();
     }
-  }, [step, goals.length, goalLoading, fetchGoals]);
+  }, [step, fetchGoals]);
 
   const handleNext = () => {
     setSlideDir('right');
@@ -130,7 +163,6 @@ export default function DailyEntryPage() {
 
   const handleSaveAll = async () => {
     setSaving(true);
-    setSavingError(null);
     const errors = [];
     const today = new Date().toISOString().split('T')[0];
 
@@ -204,7 +236,7 @@ export default function DailyEntryPage() {
     setSaving(false);
 
     if (errors.length > 0) {
-      setSavingError(errors.join('; '));
+      console.warn('Daily check-in completed with non-critical errors:', errors);
     }
 
     setSaved(true);
@@ -302,16 +334,6 @@ export default function DailyEntryPage() {
         ))}
       </div>
 
-      {savingError && (
-        <div style={{
-          padding: '12px 16px', borderRadius: '10px', background: 'rgba(239,68,68,0.1)',
-          border: '1px solid rgba(239,68,68,0.25)', color: '#f87171', fontSize: '0.875rem',
-          marginBottom: '1rem',
-        }}>
-          {savingError}
-        </div>
-      )}
-
       <div style={{
         background: '#111827', borderRadius: '16px', border: '1px solid rgba(99,102,241,0.15)',
         padding: '2rem', minHeight: '320px', display: 'flex', flexDirection: 'column',
@@ -386,42 +408,59 @@ export default function DailyEntryPage() {
                   Check off the habits you completed today
                 </p>
               </div>
-              {habitLoading ? (
-                <div style={{ textAlign: 'center', padding: '2rem', color: '#8892a4' }}>
+
+              {habitLoading && (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#8892a4' }}>
                   <div style={{
                     width: '32px', height: '32px', border: '3px solid #2a3040',
                     borderTopColor: '#6366f1', borderRadius: '50%',
                     animation: 'spin 0.8s linear infinite',
-                    margin: '0 auto 1rem',
+                    margin: '0 auto 12px',
                   }} />
-                  Loading habits...
+                  <p style={{ margin: 0, fontSize: '0.9rem' }}>Loading habits...</p>
                 </div>
-              ) : habitError ? (
-                <p style={{ color: '#f87171', fontSize: '0.9rem', textAlign: 'center', padding: '2rem' }}>
-                  {habitError}
-                </p>
-              ) : habits.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '2rem' }}>
-                  <p style={{ color: '#8892a4', fontSize: '0.9rem', margin: '0 0 1rem' }}>
+              )}
+
+              {habitError && !habitLoading && (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  <p style={{ color: '#f87171', margin: '0 0 12px', fontSize: '0.9rem' }}>{habitError}</p>
+                  <button
+                    onClick={() => { habitsFetched.current = false; fetchHabits(); }}
+                    style={{
+                      padding: '8px 20px', borderRadius: '8px', border: '1px solid rgba(99,102,241,0.3)',
+                      background: 'rgba(99,102,241,0.1)', color: '#a5b4fc',
+                      fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer',
+                    }}
+                  >
+                    Try Again
+                  </button>
+                </div>
+              )}
+
+              {!habitLoading && !habitError && habits.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '24px' }}>
+                  <p style={{ color: '#8892a4', fontSize: '0.9rem', margin: '0 0 4px' }}>
                     No habits yet! Add habits from Habit Tracker first
                   </p>
                   <Link to="/dashboard/habits" style={{
-                    color: '#a5b4fc', fontSize: '0.9rem', fontWeight: 600,
+                    color: '#a5b4fc', fontSize: '0.85rem', fontWeight: 600,
                   }}>
                     Go to Habit Tracker →
                   </Link>
                 </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              )}
+
+              {!habitLoading && !habitError && habits.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {habits.map((habit) => {
-                    const wasDone = isTodayCompleted(habit);
                     const isChecked = checkedHabits[habit._id];
                     return (
-                      <label
+                      <div
                         key={habit._id}
+                        onClick={() => handleToggleHabit(habit._id)}
                         style={{
-                          display: 'flex', alignItems: 'center', gap: '0.75rem',
-                          padding: '12px 16px', borderRadius: '10px',
+                          display: 'flex', alignItems: 'center', gap: '12px',
+                          padding: '12px', borderRadius: '10px',
                           border: '1px solid #2a3040', cursor: 'pointer',
                           background: isChecked ? 'rgba(99,102,241,0.08)' : 'transparent',
                           transition: 'all 0.2s ease',
@@ -431,11 +470,12 @@ export default function DailyEntryPage() {
                           type="checkbox"
                           checked={!!isChecked}
                           onChange={() => handleToggleHabit(habit._id)}
+                          onClick={(e) => e.stopPropagation()}
                           style={{
                             width: '18px', height: '18px', accentColor: '#6366f1', cursor: 'pointer',
                           }}
                         />
-                        <span style={{ fontSize: '1.1rem' }}>{habit.icon || '✅'}</span>
+                        <span style={{ fontSize: '1.2rem' }}>{habit.icon || '✅'}</span>
                         <span style={{
                           flex: 1, fontSize: '0.9rem', fontWeight: 500,
                           color: isChecked ? '#f0f4ff' : '#8892a4',
@@ -446,14 +486,14 @@ export default function DailyEntryPage() {
                         </span>
                         {habit.streak > 0 && (
                           <span style={{
-                            fontSize: '0.75rem', color: '#f59e0b',
-                            background: 'rgba(245,158,11,0.1)', padding: '2px 8px',
+                            fontSize: '0.8rem', color: '#f97316',
+                            background: 'rgba(249,115,22,0.1)', padding: '2px 10px',
                             borderRadius: '6px', fontWeight: 600,
                           }}>
-                            🔥 {habit.streak}
+                            🔥 {habit.streak} days
                           </span>
                         )}
-                      </label>
+                      </div>
                     );
                   })}
                 </div>
@@ -471,33 +511,50 @@ export default function DailyEntryPage() {
                   Slide to update your progress
                 </p>
               </div>
-              {goalLoading ? (
-                <div style={{ textAlign: 'center', padding: '2rem', color: '#8892a4' }}>
+
+              {goalLoading && (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#8892a4' }}>
                   <div style={{
                     width: '32px', height: '32px', border: '3px solid #2a3040',
                     borderTopColor: '#6366f1', borderRadius: '50%',
                     animation: 'spin 0.8s linear infinite',
-                    margin: '0 auto 1rem',
+                    margin: '0 auto 12px',
                   }} />
-                  Loading goals...
+                  <p style={{ margin: 0, fontSize: '0.9rem' }}>Loading goals...</p>
                 </div>
-              ) : goalError ? (
-                <p style={{ color: '#f87171', fontSize: '0.9rem', textAlign: 'center', padding: '2rem' }}>
-                  {goalError}
-                </p>
-              ) : goals.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '2rem' }}>
-                  <p style={{ color: '#8892a4', fontSize: '0.9rem', margin: '0 0 1rem' }}>
+              )}
+
+              {goalError && !goalLoading && (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  <p style={{ color: '#f87171', margin: '0 0 12px', fontSize: '0.9rem' }}>{goalError}</p>
+                  <button
+                    onClick={() => { goalsFetched.current = false; fetchGoals(); }}
+                    style={{
+                      padding: '8px 20px', borderRadius: '8px', border: '1px solid rgba(99,102,241,0.3)',
+                      background: 'rgba(99,102,241,0.1)', color: '#a5b4fc',
+                      fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer',
+                    }}
+                  >
+                    Try Again
+                  </button>
+                </div>
+              )}
+
+              {!goalLoading && !goalError && goals.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '24px' }}>
+                  <p style={{ color: '#8892a4', fontSize: '0.9rem', margin: '0 0 4px' }}>
                     No active goals! Add goals from Goals page first
                   </p>
                   <Link to="/dashboard/goals" style={{
-                    color: '#a5b4fc', fontSize: '0.9rem', fontWeight: 600,
+                    color: '#a5b4fc', fontSize: '0.85rem', fontWeight: 600,
                   }}>
                     Go to Goals →
                   </Link>
                 </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              )}
+
+              {!goalLoading && !goalError && goals.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {goals.map((goal) => (
                     <div key={goal._id} style={{
                       padding: '14px 16px', borderRadius: '10px',
@@ -510,16 +567,15 @@ export default function DailyEntryPage() {
                         <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#f0f4ff' }}>
                           {goal.title}
                         </span>
-                        <span style={{
-                          background: goal.category
-                            ? 'rgba(99,102,241,0.12)' : 'transparent',
-                          color: goal.category ? '#a5b4fc' : '#6366f1',
-                          fontSize: '0.75rem', fontWeight: 600,
-                          padding: goal.category ? '2px 10px' : '0',
-                          borderRadius: '6px',
-                        }}>
-                          {goal.category || ''}
-                        </span>
+                        {goal.category && (
+                          <span style={{
+                            background: 'rgba(99,102,241,0.12)', color: '#a5b4fc',
+                            fontSize: '0.75rem', fontWeight: 600,
+                            padding: '2px 10px', borderRadius: '6px',
+                          }}>
+                            {goal.category}
+                          </span>
+                        )}
                       </div>
                       <div style={{
                         height: '6px', background: '#1a1f2e', borderRadius: '3px',
@@ -575,10 +631,14 @@ export default function DailyEntryPage() {
           {step < 2 ? (
             <button
               onClick={handleNext}
+              disabled={habitError || goalError}
               style={{
                 padding: '10px 32px', borderRadius: '10px', border: 'none',
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                color: '#fff', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer',
+                background: habitError || goalError
+                  ? '#2a3040'
+                  : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                color: habitError || goalError ? '#4a5568' : '#fff',
+                fontSize: '0.9rem', fontWeight: 600, cursor: habitError || goalError ? 'default' : 'pointer',
                 transition: 'all 0.2s ease',
               }}
             >
