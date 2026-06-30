@@ -3,7 +3,7 @@
  */
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useFriends from '../../hooks/useFriends';
 import useChat from '../../hooks/useChat';
@@ -12,20 +12,15 @@ import socket from '../../socket/socketClient.js';
 const icons = {
   overview:   'LayoutDashboard',
   daily:      'ClipboardList',
-  habits:     'CheckSquare',
-  goals:      'Target',
-  reflection: 'BookOpen',
   timer:      'Timer',
   gratitude:  'Heart',
   friends:    'Users',
-  messages:   'MessageSquare',
-  stats:      'BarChart3',
+  messages:   'MessageCircle',
   achievements:'Trophy',
   settings:   'Settings',
 };
 
 function LucideIcon({ name, size = 20 }) {
-  const ref = useRef(null);
   const [Icon, setIcon] = useState(null);
   useEffect(() => {
     import('lucide-react').then(mod => {
@@ -36,9 +31,17 @@ function LucideIcon({ name, size = 20 }) {
   return <Icon size={size} />;
 }
 
+const dailyLogRoutes = [
+  '/dashboard/daily',
+  '/dashboard/habits',
+  '/dashboard/reflection',
+  '/dashboard/goals',
+];
+
 function Sidebar({ isOpen, toggleSidebar, isMobile }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { pendingRequests, fetchPendingRequests } = useFriends();
   const { unreadCount } = useChat();
 
@@ -49,22 +52,31 @@ function Sidebar({ isOpen, toggleSidebar, isMobile }) {
   const dailyRef = useRef(null);
   const popupRef = useRef(null);
 
+  const isDailyActive = dailyLogRoutes.some(route =>
+    location.pathname.startsWith(route)
+  );
+
   const showPopup = useCallback(() => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     openTimer.current = setTimeout(() => {
       if (dailyRef.current) {
         const rect = dailyRef.current.getBoundingClientRect();
-        setPopupTop(rect.top);
+        let top = rect.top;
+        const popupHeight = 300;
+        if (top + popupHeight > window.innerHeight) {
+          top = window.innerHeight - popupHeight - 16;
+        }
+        setPopupTop(top);
       }
       setPopupVisible(true);
-    }, 5);
+    }, 100);
   }, []);
 
   const hidePopup = useCallback(() => {
     if (openTimer.current) clearTimeout(openTimer.current);
     closeTimer.current = setTimeout(() => {
       setPopupVisible(false);
-    }, 200);
+    }, 150);
   }, []);
 
   useEffect(() => {
@@ -101,22 +113,12 @@ function Sidebar({ isOpen, toggleSidebar, isMobile }) {
   const nav = [
     { key: 'overview',    name: 'Overview',      path: '/dashboard',         icon: icons.overview },
     { key: 'daily',       name: 'Daily Log',     path: '/dashboard/daily',   icon: icons.daily, hasPopup: true },
-    { key: 'habits',      name: 'Habit Tracker', path: '/dashboard/habits',  icon: icons.habits },
-    { key: 'goals',       name: 'Goals',         path: '/dashboard/goals',   icon: icons.goals },
-    { key: 'reflection',  name: 'Reflection',    path: '/dashboard/reflection', icon: icons.reflection },
     { key: 'timer',       name: 'Focus Timer',   path: '/dashboard/focus',   icon: icons.timer },
     { key: 'gratitude',   name: 'Gratitude',     path: '/dashboard/gratitude', icon: icons.gratitude },
     { key: 'friends',     name: 'Friends',       path: '/dashboard/friends', icon: icons.friends },
     { key: 'messages',    name: 'Messages',      path: '/dashboard/chat',    icon: icons.messages },
-    { key: 'stats',       name: 'Statistics',    path: '/dashboard/stats',   icon: icons.stats },
     { key: 'achievements',name: 'Achievements',  path: '/dashboard/achievements', icon: icons.achievements },
     { key: 'settings',    name: 'Settings',      path: '/dashboard/settings', icon: icons.settings },
-  ];
-
-  const dailyPopupItems = [
-    { name: 'Habit Tracker', path: '/dashboard/habits',  icon: icons.habits },
-    { name: 'Reflection',    path: '/dashboard/reflection', icon: icons.reflection },
-    { name: 'Goals',         path: '/dashboard/goals',   icon: icons.goals },
   ];
 
   const renderBadge = (item) => {
@@ -137,6 +139,27 @@ function Sidebar({ isOpen, toggleSidebar, isMobile }) {
     return null;
   };
 
+  const renderMobileNav = () => (
+    <nav className="sidebar-mobile-nav">
+      {nav.map(item => (
+        <NavLink
+          key={item.key}
+          to={item.path}
+          end={item.path === '/dashboard'}
+          className={({ isActive }) => {
+            const active = item.hasPopup ? isActive || isDailyActive : isActive;
+            return `sidebar-mobile-item ${active ? 'active' : ''}`;
+          }}
+          onClick={toggleSidebar}
+        >
+          <span className="sidebar-nav-icon"><LucideIcon name={item.icon} /></span>
+          <span className="sidebar-nav-label">{item.name}</span>
+          {renderBadge(item)}
+        </NavLink>
+      ))}
+    </nav>
+  );
+
   if (isMobile) {
     return (
       <>
@@ -150,21 +173,7 @@ function Sidebar({ isOpen, toggleSidebar, isMobile }) {
             <div className="gritflow-logo">✨ GritFlow</div>
             <button className="sidebar-mobile-close" onClick={toggleSidebar} aria-label="Close menu">✕</button>
           </div>
-          <nav className="sidebar-mobile-nav">
-            {nav.map(item => (
-              <NavLink
-                key={item.key}
-                to={item.path}
-                end={item.path === '/dashboard'}
-                className={({ isActive }) => `sidebar-mobile-item ${isActive ? 'active' : ''}`}
-                onClick={toggleSidebar}
-              >
-                <span className="sidebar-nav-icon"><LucideIcon name={item.icon} /></span>
-                <span className="sidebar-nav-label">{item.name}</span>
-                {renderBadge(item)}
-              </NavLink>
-            ))}
-          </nav>
+          {renderMobileNav()}
           <div className="sidebar-mobile-footer">
             <button className="sidebar-mobile-logout" onClick={handleLogout}>
               <LucideIcon name="LogOut" size={20} />
@@ -202,7 +211,10 @@ function Sidebar({ isOpen, toggleSidebar, isMobile }) {
                 <NavLink
                   to={item.path}
                   end={item.path === '/dashboard'}
-                  className={({ isActive }) => `sidebar-nav-item ${isActive ? 'active' : ''}`}
+                  className={({ isActive }) => {
+                    const active = item.hasPopup ? isActive || isDailyActive : isActive;
+                    return `sidebar-nav-item ${active ? 'active' : ''}`;
+                  }}
                 >
                   {inner}
                 </NavLink>
@@ -221,22 +233,47 @@ function Sidebar({ isOpen, toggleSidebar, isMobile }) {
 
       {popupVisible && (
         <div
-          className="sidebar-hover-popup"
+          className="dailylog-popup"
           style={{ top: `${popupTop}px` }}
           ref={popupRef}
           onMouseEnter={showPopup}
           onMouseLeave={hidePopup}
         >
-          {dailyPopupItems.map(item => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) => `sidebar-popup-item ${isActive ? 'active' : ''}`}
-            >
-              <span className="sidebar-nav-icon"><LucideIcon name={item.icon} size={18} /></span>
-              <span>{item.name}</span>
-            </NavLink>
-          ))}
+          <div className="dailylog-popup-header">DAILY LOG</div>
+
+          <NavLink to="/dashboard/daily" className={({ isActive }) => `dailylog-popup-item ${isActive ? 'active' : ''}`}>
+            <span className="dailylog-popup-icon daily-checkin">📋</span>
+            <div className="dailylog-popup-text">
+              <span className="dailylog-popup-title">Daily Check-in</span>
+              <span className="dailylog-popup-desc">Complete today's check-in</span>
+            </div>
+          </NavLink>
+
+          <div className="dailylog-popup-divider" />
+
+          <NavLink to="/dashboard/habits" className={({ isActive }) => `dailylog-popup-item ${isActive ? 'active' : ''}`}>
+            <span className="dailylog-popup-icon habits">✅</span>
+            <div className="dailylog-popup-text">
+              <span className="dailylog-popup-title">Habit Tracker</span>
+              <span className="dailylog-popup-desc">Track your daily habits</span>
+            </div>
+          </NavLink>
+
+          <NavLink to="/dashboard/reflection" className={({ isActive }) => `dailylog-popup-item ${isActive ? 'active' : ''}`}>
+            <span className="dailylog-popup-icon reflection">📓</span>
+            <div className="dailylog-popup-text">
+              <span className="dailylog-popup-title">Reflection</span>
+              <span className="dailylog-popup-desc">Journal your thoughts</span>
+            </div>
+          </NavLink>
+
+          <NavLink to="/dashboard/goals" className={({ isActive }) => `dailylog-popup-item ${isActive ? 'active' : ''}`}>
+            <span className="dailylog-popup-icon goals">🎯</span>
+            <div className="dailylog-popup-text">
+              <span className="dailylog-popup-title">Goals</span>
+              <span className="dailylog-popup-desc">Track your progress</span>
+            </div>
+          </NavLink>
         </div>
       )}
     </div>
