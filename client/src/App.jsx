@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import PageLoader from './components/ui/PageLoader';
 import ErrorBoundary from './components/ui/ErrorBoundary.jsx';
 
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
@@ -50,8 +51,8 @@ function AppContent() {
       <Router>
         <Suspense fallback={<PageLoader message="Loading page..." />}>
           <Routes>
-            {/* Redirect / to /dashboard */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            {/* Landing page at root */}
+            <Route path="/" element={<LandingPage />} />
 
             {/* Public Auth Routes */}
             <Route path="/login" element={<LoginPage />} />
