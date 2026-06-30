@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import api from '../services/axiosConfig';
 
 const moods = [
@@ -65,8 +66,11 @@ export default function DailyEntryPage() {
         console.error('No auth token found');
         return;
       }
-      const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const res = await api.get(`${baseURL}/api/habits`);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await axios.get(`${API_URL}/api/habits`, {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 10000,
+      });
       const data = res.data || [];
       console.log('Habits fetched:', data.length);
       setHabits(data);
@@ -100,8 +104,11 @@ export default function DailyEntryPage() {
         console.error('No auth token found');
         return;
       }
-      const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const res = await api.get(`${baseURL}/api/goals`);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const res = await axios.get(`${API_URL}/api/goals`, {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 10000,
+      });
       const data = res.data || [];
       console.log('Goals fetched:', data.length);
       const active = data.filter((g) => g.status === 'active' || !g.status);
