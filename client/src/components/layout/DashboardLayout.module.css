@@ -1,62 +1,7 @@
 /* ─── DashboardLayout.module.css ─────────────────────────────────────────── */
 
-.layoutContainer {
-  display: flex;
-  min-height: 100vh;
-  background-color: var(--color-bg);
-  position: relative;
-  overflow-x: hidden;
-}
-
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  min-height: 100vh;
-  transition: padding-left var(--transition-base);
-  padding-left: 0;
-}
-
-/* Adjust padding when sidebar is collapsed/hidden */
-.mainContent.sidebarClosed {
-  padding-left: 0;
-}
-
-.pageBody {
-  flex-grow: 1;
-  padding: 2rem;
-  overflow-y: auto;
-}
-
-/* Mobile backdrop */
-.backdrop {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  z-index: 90;
-  animation: fadeIn 0.2s ease;
-}
-
-.backdrop.show {
-  display: block;
-}
-
 @media (max-width: 768px) {
-  .mainContent {
-    padding-left: 0;
-  }
-  
   .pageBody {
     padding: 1.5rem 1rem;
   }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }

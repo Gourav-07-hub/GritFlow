@@ -73,7 +73,7 @@ function Navbar({ toggleSidebar, sidebarOpen }) {
     <header className={styles.navbar}>
       <div className={styles.left}>
         <button
-          className={styles.menuButton}
+          className={`${styles.menuButton} hamburger-btn`}
           onClick={toggleSidebar}
           aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
         >

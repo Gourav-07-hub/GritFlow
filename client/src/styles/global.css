@@ -2671,82 +2671,87 @@ img, video, canvas, svg, input[type="range"]::-webkit-slider-thumb {
 
 /* ─── Sidebar: Minimal Icon Rail ─── */
 
-.sidebar-container {
-  display: flex;
-  align-items: stretch;
-  width: 72px;
-  min-height: 100vh;
+.sidebar {
   position: relative;
-  flex-shrink: 0;
-  z-index: 200;
-}
-
-.sidebar-rail {
   width: 72px;
   min-height: 100vh;
+  flex-shrink: 0;
   background: linear-gradient(180deg, #0a0f1e 0%, #080b14 100%);
   border-right: 1px solid var(--border-glow);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16px 0;
-  gap: 8px;
-  position: relative;
-  z-index: 201;
-  flex-shrink: 0;
+  overflow: visible;
+  z-index: 200;
   box-shadow: 2px 0 20px rgba(99, 102, 241, 0.05);
-  transition: width 0.2s ease;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sidebar-rail:hover {
+.sidebar:hover {
   width: 220px;
   align-items: stretch;
-  padding: 16px 12px;
 }
 
-.sidebar-rail:hover .sidebar-expanded {
-  display: flex;
-}
-
-.sidebar-rail:hover .sidebar-icon-only {
-  display: none;
-}
-
-.sidebar-rail:hover .expand-label {
+.sidebar:hover .expand-label {
   display: inline;
 }
 
-.sidebar-rail:not(:hover) .sidebar-expanded {
+.sidebar:not(:hover) .expand-label {
   display: none;
 }
 
-.sidebar-rail:not(:hover) .sidebar-icon-only {
-  display: flex;
-}
-
-.sidebar-rail:not(:hover) .expand-label {
-  display: none;
-}
-
-/* Logo area */
-.sidebar-logo-area {
+/* Logo section */
+.sidebar-logo {
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  min-height: 64px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.2s ease;
+  text-decoration: none;
+  user-select: none;
   width: 100%;
-  padding: 8px 0 20px;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 8px;
+  gap: 10px;
 }
 
-.sidebar-rail:hover .sidebar-logo-area {
-  justify-content: flex-start;
-  padding-left: 4px;
+.sidebar-logo:hover {
+  background: rgba(99, 102, 241, 0.08);
 }
 
 .sidebar-logo-icon {
-  font-size: 1.5rem;
-  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
+
+.sidebar:not(:hover) .sidebar-logo {
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.sidebar-logo-text {
+  font-size: 1.1rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.4s ease 0.1s;
+  pointer-events: none;
+}
+
+.sidebar:hover .sidebar-logo-text {
+  opacity: 1;
 }
 
 /* Nav items */
@@ -2811,14 +2816,14 @@ img, video, canvas, svg, input[type="range"]::-webkit-slider-thumb {
 }
 
 /* Expanded layout: icon + label side by side */
-.sidebar-rail:not(:hover) .sidebar-nav-item {
+.sidebar:not(:hover) .sidebar-nav-item {
   justify-content: center;
   padding: 10px;
   width: 48px;
   margin: 0 auto;
 }
 
-.sidebar-rail:not(:hover) .sidebar-nav-icon svg {
+.sidebar:not(:hover) .sidebar-nav-icon svg {
   width: 22px;
   height: 22px;
 }
@@ -2836,7 +2841,7 @@ img, video, canvas, svg, input[type="range"]::-webkit-slider-thumb {
   margin-left: auto;
 }
 
-.sidebar-rail:not(:hover) .sidebar-badge {
+.sidebar:not(:hover) .sidebar-badge {
   position: absolute;
   top: 2px;
   right: 2px;
@@ -2853,7 +2858,7 @@ img, video, canvas, svg, input[type="range"]::-webkit-slider-thumb {
   justify-content: center;
 }
 
-.sidebar-rail:hover .sidebar-footer {
+.sidebar:hover .sidebar-footer {
   padding: 12px 0 8px;
 }
 
@@ -2879,7 +2884,7 @@ img, video, canvas, svg, input[type="range"]::-webkit-slider-thumb {
   color: #ff8787;
 }
 
-.sidebar-rail:not(:hover) .sidebar-logout-btn {
+.sidebar:not(:hover) .sidebar-logout-btn {
   justify-content: center;
   width: 48px;
   padding: 10px;
@@ -3112,4 +3117,76 @@ img, video, canvas, svg, input[type="range"]::-webkit-slider-thumb {
 .sidebar-mobile-logout:hover {
   background-color: rgba(239, 68, 68, 0.1);
   color: #ff8787;
+}
+
+/* ─── Hamburger: hidden on desktop, visible on mobile ─── */
+@media (min-width: 769px) {
+  .hamburger-btn {
+    display: none !important;
+  }
+}
+
+/* ─── Sidebar: mobile responsive overrides ─── */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 999;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    width: 220px !important;
+    align-items: stretch;
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar:hover {
+    width: 220px !important;
+  }
+
+  .sidebar .sidebar-logo-text {
+    opacity: 1;
+  }
+
+  .sidebar .expand-label {
+    display: inline;
+  }
+
+  .sidebar .sidebar-nav-item {
+    justify-content: flex-start;
+    padding: 10px;
+    width: auto;
+    margin: 0;
+  }
+
+  .sidebar .sidebar-nav-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .sidebar .sidebar-footer {
+    padding: 12px 0 8px;
+  }
+
+  .sidebar .sidebar-logout-btn {
+    justify-content: flex-start;
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+  }
+
+  .sidebar .sidebar-logo {
+    justify-content: flex-start;
+    padding: 16px 20px;
+  }
+
+  .sidebar .sidebar-badge {
+    position: static;
+    font-size: 0.6rem;
+    padding: 0.1rem 0.35rem;
+  }
 }

@@ -1,17 +1,14 @@
 /**
  * DashboardLayout.jsx — Top-level layout with sidebar, navbar, and main content area
- * Styled with Cosmic Premium spacing rules and Lucide-react icon consistency.
  */
 
 import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
-import styles from './DashboardLayout.module.css';
 
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(() => {
-    // Open by default on desktop, closed on mobile
     return window.innerWidth > 768;
   });
 
@@ -21,11 +18,7 @@ function DashboardLayout() {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      if (!mobile) {
-        // Force open on desktop
-        setSidebarOpen(true);
-      } else {
-        // Force close on mobile
+      if (mobile) {
         setSidebarOpen(false);
       }
     };
@@ -39,22 +32,40 @@ function DashboardLayout() {
   };
 
   return (
-    <div className={styles.layoutContainer}>
-      {/* Mobile Overlay backdrop */}
-      <div
-        className={`${styles.backdrop} ${isMobile && sidebarOpen ? styles.show : ''}`}
-        onClick={() => setSidebarOpen(false)}
-      />
+    <div style={{
+      display: 'flex',
+      minHeight: '100vh',
+      width: '100%',
+      backgroundColor: 'var(--color-bg)',
+    }}>
+      {isMobile && sidebarOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 90,
+          }}
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
       <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} isMobile={isMobile} />
 
-      <div
-        className={`${styles.mainContent} ${
-          sidebarOpen && !isMobile ? '' : styles.sidebarClosed
-        }`}
-      >
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        minWidth: 0,
+        overflow: 'hidden',
+      }}>
         <Navbar toggleSidebar={toggleSidebar} sidebarOpen={sidebarOpen} />
-        <main className={styles.pageBody}>
+        <main style={{
+          flex: 1,
+          overflow: 'auto',
+          padding: '24px',
+        }}>
           <Outlet />
         </main>
       </div>

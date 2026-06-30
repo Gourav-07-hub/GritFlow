@@ -4,6 +4,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Zap } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import useFriends from '../../hooks/useFriends';
 import useChat from '../../hooks/useChat';
@@ -139,57 +140,18 @@ function Sidebar({ isOpen, toggleSidebar, isMobile }) {
     return null;
   };
 
-  const renderMobileNav = () => (
-    <nav className="sidebar-mobile-nav">
-      {nav.map(item => (
-        <NavLink
-          key={item.key}
-          to={item.path}
-          end={item.path === '/dashboard'}
-          className={({ isActive }) => {
-            const active = item.hasPopup ? isActive || isDailyActive : isActive;
-            return `sidebar-mobile-item ${active ? 'active' : ''}`;
-          }}
-          onClick={toggleSidebar}
-        >
-          <span className="sidebar-nav-icon"><LucideIcon name={item.icon} /></span>
-          <span className="sidebar-nav-label">{item.name}</span>
-          {renderBadge(item)}
-        </NavLink>
-      ))}
-    </nav>
-  );
-
-  if (isMobile) {
-    return (
-      <>
-        {isOpen && (
-          <div className="sidebar-mobile-overlay" onClick={toggleSidebar} />
-        )}
-        <aside className={`sidebar-mobile-drawer ${isOpen ? '' : 'closed'}`}
-          style={{ transform: isOpen ? 'translateX(0)' : 'translateX(-100%)' }}
-        >
-          <div className="sidebar-mobile-header">
-            <div className="gritflow-logo">✨ GritFlow</div>
-            <button className="sidebar-mobile-close" onClick={toggleSidebar} aria-label="Close menu">✕</button>
-          </div>
-          {renderMobileNav()}
-          <div className="sidebar-mobile-footer">
-            <button className="sidebar-mobile-logout" onClick={handleLogout}>
-              <LucideIcon name="LogOut" size={20} />
-              Logout
-            </button>
-          </div>
-        </aside>
-      </>
-    );
-  }
+  const handleNavClick = () => {
+    if (isMobile) toggleSidebar();
+  };
 
   return (
-    <div className="sidebar-container">
-      <aside className="sidebar-rail">
-        <div className="sidebar-logo-area">
-          <span className="sidebar-logo-icon">✨</span>
+    <>
+      <aside className={`sidebar${isMobile && isOpen ? ' mobile-open' : ''}`}>
+        <div className="sidebar-logo" onClick={() => { navigate('/dashboard'); if (isMobile) toggleSidebar(); }}>
+          <div className="sidebar-logo-icon">
+            <Zap size={18} color="white" fill="white" />
+          </div>
+          <span className="sidebar-logo-text">GritFlow</span>
         </div>
 
         <nav className="sidebar-nav">
@@ -204,13 +166,14 @@ function Sidebar({ isOpen, toggleSidebar, isMobile }) {
 
             return (
               <div key={item.key}
-                ref={item.hasPopup ? dailyRef : null}
-                onMouseEnter={item.hasPopup ? showPopup : undefined}
-                onMouseLeave={item.hasPopup ? hidePopup : undefined}
+                ref={item.hasPopup && !isMobile ? dailyRef : null}
+                onMouseEnter={item.hasPopup && !isMobile ? showPopup : undefined}
+                onMouseLeave={item.hasPopup && !isMobile ? hidePopup : undefined}
               >
                 <NavLink
                   to={item.path}
                   end={item.path === '/dashboard'}
+                  onClick={handleNavClick}
                   className={({ isActive }) => {
                     const active = item.hasPopup ? isActive || isDailyActive : isActive;
                     return `sidebar-nav-item ${active ? 'active' : ''}`;
@@ -231,7 +194,7 @@ function Sidebar({ isOpen, toggleSidebar, isMobile }) {
         </div>
       </aside>
 
-      {popupVisible && (
+      {!isMobile && popupVisible && (
         <div
           className="dailylog-popup"
           style={{ top: `${popupTop}px` }}
@@ -276,7 +239,7 @@ function Sidebar({ isOpen, toggleSidebar, isMobile }) {
           </NavLink>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
